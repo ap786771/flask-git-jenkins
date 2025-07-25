@@ -1,3 +1,8 @@
+def COLOR_MAP = [
+    "FAILURE" : 'danger',
+    "SUCCESS" : 'good'
+]
+
 pipeline {
     agent any
 
@@ -18,6 +23,17 @@ pipeline {
             steps {
                 sh 'nohup python3 app.py &'
             }
+        }
+    }
+
+    post {
+        always {
+            echo "Slack Notifications"
+            slackSend(
+                channel: "#jenkins",
+                color: COLOR_MAP[currentBuild.currentResult] ?: 'warning',
+                message: "*${currentBuild.currentResult}:* Job `${env.JOB_NAME}`\nBuild #${env.BUILD_NUMBER}\n<${env.BUILD_URL}|View Details>"
+            )
         }
     }
 }
