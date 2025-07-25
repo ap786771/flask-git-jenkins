@@ -1,8 +1,9 @@
 pipeline {
-    agent any
-
-    environment {
-        APP_ENV = "development"
+    agent {
+        docker {
+            image 'python:3.10'
+            args '-u root' // optional, lets you install packages if needed
+        }
     }
 
     stages {
@@ -14,13 +15,13 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'pip3 install -r requirements.txt'
+                sh 'pip install -r requirements.txt'
             }
         }
 
         stage('Run Flask App') {
             steps {
-                sh 'nohup python3 app.py &'
+                sh 'python app.py &'
             }
         }
     }
